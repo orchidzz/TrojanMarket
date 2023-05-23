@@ -1,0 +1,9 @@
+export const LOGIN = "LOGIN";
+export const UPDATE_ITEM = "UPDATE_ITEM";
+export const GET_ITEMS = "GET_ITEMS";
+export const GET_LISTED_ITEMS = "GET_LISTED_ITEMS";
+export const BUY = "BUY";
+export const SELL = "SELL";
+export const RATE = "RATE";
+export const MESSAGE = "MESSAGE";
+export const UPDATE_PROFILE = "UPDATE_PROFILE";
