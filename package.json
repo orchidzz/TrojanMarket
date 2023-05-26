@@ -13,7 +13,6 @@
   "author": "orchidzz",
   "license": "ISC",
   "dependencies": {
-    "backend": "file:backend",
-    "frontend": "file:frontend"
+    "backend": "file:backend"
   }
 }
