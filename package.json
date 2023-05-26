@@ -1,18 +1,19 @@
 {
-  "name": "backend",
+  "name": "trojanmarket",
   "version": "1.0.0",
-  "description": "Backend of web app",
+  "description": "",
   "main": "backend/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git@github-personal.com:orchidzz/TrojanMarket.git"
+  },
   "author": "orchidzz",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.1383.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.0.3",
-    "express": "^4.18.2",
-    "path": "^0.12.7"
+    "backend": "file:backend",
+    "frontend": "file:frontend"
   }
 }
