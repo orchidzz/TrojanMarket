@@ -1,8 +1,16 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-require("dotenv").config(); // Load environment variables from .env file
-
+require("dotenv").config();
+import { getProfile, updateProfile } from "../controllers/user";
+import {
+    buyItem,
+    sellItem,
+    updateItem,
+    getActiveItems,
+} from "../controllers/items";
+import verify from "../middleware/verify";
+import authorize from "../middleware/auth";
 class Server {
     constructor() {
         this.app = express();
@@ -14,12 +22,11 @@ class Server {
 
     middlewares() {
         this.app.use(cors()); // Enable CORS
+        this.app.use(express.json());
     }
 
     // Bind controllers to routes
     routes() {
-        // this.app.use(this.paths.login, require("../routes/login"));
-
         // connect to react client
         this.app.use(
             express.static(path.join(__dirname, "../../frontend", "build"))
@@ -37,6 +44,19 @@ class Server {
                 );
             }
         );
+        // post routes
+        this.app.post("/api/updateUser", verify, updateProfile(req, res));
+        this.app.post("/api/buy", verify, buyItem(req, res));
+        this.app.post("/api/sell", verify, sellItem(req, res));
+        this.app.post("/api/updateItem", verify, updateItem(req, res));
+
+        // get routes
+        this.app.get("/api/profile", verify, getProfile(req, res));
+        this.app.get("/api/items", verify, getActiveItems(req, res));
+        this.app.get("/api/auth", async (req, res) => {
+            const token = await authorize(req.token);
+            res.json(token);
+        });
     }
 
     listen() {

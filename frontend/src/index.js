@@ -3,12 +3,28 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App";
+import { initializeApp } from "firebase/app";
+import { Provider } from "react-redux";
+import { store, persistor } from "./constants/store";
+import { PersistGate } from "redux-persist/integration/react";
+
+// Firebase project configuration
+const firebaseConfig = {
+    authDomain: "trojanmarket-68b14.firebaseapp.com",
+    apiKey: "AIzaSyBuifJNA0NEEn_y308XIuUKCgfGXiTQHZs",
+    projectId: "trojanmarket-68b14",
+};
+const app = initializeApp(firebaseConfig);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
     <React.StrictMode>
         <BrowserRouter>
-            <App />
+            <Provider store={store}>
+                <PersistGate loading={null} persistor={persistor}>
+                    <App />
+                </PersistGate>
+            </Provider>
         </BrowserRouter>
     </React.StrictMode>
 );

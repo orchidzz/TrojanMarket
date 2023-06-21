@@ -1,26 +1,106 @@
 import {
     BUY,
-    SELL,
-    UPDATE_ITEM,
+    BUY_SUCCESS,
+    BUY_FAILURE,
     GET_ITEMS,
-    GET_LISTED_ITEMS,
+    GET_ITEMS_SUCCESS,
+    GET_ITEMS_FAILURE,
 } from "../constants/actiontypes";
+import { initialItemsState } from "../constants/initialStates";
 
-const itemReducer = (items = [], action) => {
+export const getItemsReducer = (state = initialItemsState, action) => {
     switch (action.type) {
-        case BUY:
-            return [...items, action.payload];
-        case SELL:
-            return action.payload;
-        case UPDATE_ITEM:
-            return action.payload;
         case GET_ITEMS:
-            return action.payload;
-        case GET_LISTED_ITEMS:
-            return action.payload;
+            return {
+                items: [],
+                loading: true,
+                error: null,
+            };
+        case GET_ITEMS_SUCCESS:
+            return {
+                error: null,
+                loading: false,
+                items: action.payload,
+            };
+        case GET_ITEMS_FAILURE:
+            return {
+                items: [],
+                loading: false,
+                error: action.payload,
+            };
         default:
-            return items;
+            return state;
     }
 };
 
-export default itemReducer;
+export const buyReducer = (state = initialItemsState, action) => {
+    switch (action.type) {
+        case BUY:
+            return {
+                loading: true,
+                error: null,
+            };
+        case BUY_SUCCESS:
+            return {
+                loading: false,
+                error: null,
+            };
+        case BUY_FAILURE:
+            return {
+                loading: false,
+                error: action.payload,
+            };
+        default:
+            return state;
+    }
+};
+
+// export const sellReducer = (state = initialState, action) => {
+//     switch (action.type) {
+//         case SELL:
+//             return {
+//                 loading: true,
+//                 error: null,
+//             };
+//         case SELL_SUCCESS:
+//             return {
+//                 loading: false,
+//                 listedItems: [...state.listedItems, action.payload],
+//             };
+//         case SELL_FAILURE:
+//             return {
+//                 loading: false,
+//                 error: action.payload,
+//             };
+//         default:
+//             return state;
+//     }
+// };
+
+// export const updateItemReducer = (state = initialState, action) => {
+//     switch (action.type) {
+//         case UPDATE_ITEM:
+//             return {
+//                 loading: true,
+//                 error: null,
+//             };
+//         case UPDATE_ITEM_SUCCESS:
+//             // delete old item and add updated item
+//             return {
+//                 loading: false,
+//                 listedItems: [
+//                     ...state.listedItems.filter(
+//                         (item) => item.itemId !== action.payload.itemId
+//                     ),
+//                     action.payload,
+//                 ],
+//             };
+//         case UPDATE_ITEM_FAILURE:
+//             return {
+//                 loading: false,
+//                 error: action.payload,
+//             };
+//         default:
+//             return state;
+//     }
+// };

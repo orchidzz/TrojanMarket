@@ -1,6 +1,5 @@
 import React from "react";
 import { Grid, Box } from "@mui/material";
-import ItemCard from "./itemCard";
 
 export default function ItemGrid(props) {
     /* 
@@ -8,6 +7,8 @@ export default function ItemGrid(props) {
     */
     // dynamically create items within the grid
     if (props.items == null) {
+        return;
+    } else if (props.items.length === 0) {
         return;
     }
     return (

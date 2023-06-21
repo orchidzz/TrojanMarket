@@ -1,21 +1,21 @@
 import "./App.css";
 import { Container } from "@mui/system";
 import { Routes, Route } from "react-router-dom";
-
 import Homepage from "./components/homepage/homepage";
 import NavBar from "./components/navbar/navbar";
-import ItemGrid from "./components/items/itemGrid";
 import NewItemForm from "./components/items/newItemForm";
 import SettingsPage from "./components/user/settings";
-import RatingDialog from "./components/user/ratingDialog";
-
+import MainPage from "./components/pages/main";
+import SearchPage from "./components/pages/search";
+import ListedItemsPage from "./components/pages/listed";
+import ListedItemCard from "./components/items/listedItemCard";
 function App() {
     return (
         <div className="App">
             <Container className="container" maxWidth="lg">
                 <Routes>
                     <Route path="/" element={<Homepage />} />
-                    <Route path="/home" element={[<NavBar />, <ItemGrid />]} />
+                    <Route path="/home" element={<MainPage />} />
                     <Route
                         path="/profile"
                         element={[<NavBar />, <SettingsPage />]}
@@ -24,12 +24,8 @@ function App() {
                         path="/add"
                         element={[<NavBar />, <NewItemForm />]}
                     />
-                    <Route path="/sold" element={[<NavBar />, <ItemGrid />]} />
-                    <Route
-                        path="/search"
-                        element={[<NavBar />, <ItemGrid />]}
-                    />
-                    {/* <RatingDialog /> */}
+                    <Route path="/sold" element={<ListedItemsPage />} />
+                    <Route path="/search" element={<SearchPage />} />
                 </Routes>
             </Container>
         </div>

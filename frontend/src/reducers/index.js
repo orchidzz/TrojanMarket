@@ -1,6 +1,11 @@
-import { combineReducers } from "redux";
+import { combineReducers } from "@reduxjs/toolkit";
+import { userReducer, authReducer } from "./userReducer";
+import { getItemsReducer, buyReducer } from "./itemReducer";
 
-import userReducer from "./userReducer";
-import itemReducer from "./itemReducer";
-
-export const reducers = combineReducers({ userReducer, itemReducer });
+const reducers = combineReducers({
+    userReducer,
+    authReducer,
+    getItemsReducer,
+    buyReducer,
+});
+export default reducers;

@@ -17,6 +17,7 @@ export default function ItemCard(props) {
     return (
         <ThemeProvider theme={uscTheme}>
             <Card
+                id={props.itemId}
                 className="item"
                 sx={{
                     display: "flex",
@@ -43,9 +44,7 @@ export default function ItemCard(props) {
                         </Typography>
 
                         <Typography variant="body2" component="div">
-                            {props.description} Lizards are a widespread group
-                            of squamate reptiles, with over 6,000 species,
-                            ranging across all continents except Antarctica
+                            {props.description}
                         </Typography>
                     </CardContent>
                     <Box
@@ -78,8 +77,7 @@ export default function ItemCard(props) {
                 <CardMedia
                     component="img"
                     sx={{ width: "100%" }}
-                    image="/static/images/cards/live-from-space.jpg"
-                    alt="Live from space album cover"
+                    image={props.imgs}
                 />
             </Card>
         </ThemeProvider>

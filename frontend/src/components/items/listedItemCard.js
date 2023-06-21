@@ -13,32 +13,44 @@ import {
     Checkbox,
     FormGroup,
     FormControlLabel,
+    TextField,
 } from "@mui/material";
 import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";
 import SendIcon from "@mui/icons-material/Send";
 import { red } from "@mui/material/colors";
 import { ThemeProvider } from "@mui/material";
 import uscTheme from "../homepage/styles";
+import { useDispatch } from "react-redux";
+import { updateItemAction } from "../../actions/itemActions";
 
-export function ListedItemCard(props) {
+export default function ListedItemCard(props) {
     const [open, setOpen] = useState(false);
+    const [itemId] = useState(props.itemId);
+    const [description, setDescription] = useState(props.description);
+    const [title, setTitle] = useState(props.title);
+    const [price, setPrice] = useState(props.price);
+    const [active, setActive] = useState(props.active);
+    const [edit, setEdit] = useState(false);
+    const dispatch = useDispatch();
+    function handleEdit() {
+        const item = {
+            itemId: itemId,
+            itemTitle: title,
+            itemDescription: description,
+            itemPrice: price,
+            itemActive: active,
+        };
+        dispatch(updateItemAction(item));
+        setEdit(false);
+    }
 
-    /* 
-    props: {title: "",
-            price: "",
-            images: [],
-            description: "",
-            sellerRating: "",
-            seller: ""
-        }
-    */
     return (
         <ThemeProvider theme={uscTheme}>
             <Card
                 className="item"
                 sx={{
                     display: "flex",
-                    justifyContent: "center",
+                    justifyContent: "left",
                     alignItems: "stretch",
                     flexDirection: "column",
                     margin: "0",
@@ -52,51 +64,75 @@ export function ListedItemCard(props) {
                         flexDirection: "column",
                     }}
                 >
-                    <CardContent sx={{ flex: "1 0 auto", textAlign: "left" }}>
-                        <Typography component="div" variant="h5">
-                            {props.title}
-                        </Typography>
-                        <Typography variant="subtitle1" component="div">
-                            {props.seller} {props.sellerRating}
-                        </Typography>
+                    {edit ? (
+                        <FormGroup
+                            sx={{
+                                flex: "1 0 auto",
+                                textAlign: "left",
+                                width: "90%",
+                                pt: "3px",
+                            }}
+                        >
+                            <FormControlLabel
+                                control={
+                                    <TextField
+                                        variant="standard"
+                                        defaultValue={title}
+                                        sx={{ marginLeft: "5px" }}
+                                    />
+                                }
+                                onChange={(event) =>
+                                    setTitle(event.target.value)
+                                }
+                                label="Title"
+                                labelPlacement="start"
+                                sx={{ justifyContent: "flex-end" }}
+                            />
 
-                        <Typography variant="body2" component="div">
-                            {props.description} Lizards are a widespread group
-                            of squamate reptiles, with over 6,000 species,
-                            ranging across all continents except Antarctica
-                        </Typography>
-                    </CardContent>
-                    <Box
-                        sx={{
-                            display: "flex",
-                            alignItems: "right",
-                            justifyContent: "right",
-                            pl: 1,
-                            pb: 1,
-                            pr: 1,
-                        }}
-                    >
-                        <Typography variant="body2">
-                            {props.price} hh
-                        </Typography>
-                    </Box>
-
-                    <Box
-                        sx={{
-                            display: "flex",
-                            alignItems: "right",
-                            justifyContent: "right",
-                            pl: 1,
-                            pb: 1,
-                            pr: 1,
-                        }}
-                    >
-                        <CustomButton text="Edit Info" />
-                        <FormGroup sx={{ pt: "3px" }}>
+                            <FormControlLabel
+                                control={
+                                    <TextField
+                                        defaultValue={description}
+                                        variant="standard"
+                                        multiline
+                                        rows={5}
+                                        sx={{
+                                            marginLeft: 0,
+                                            width: "100%",
+                                        }}
+                                    />
+                                }
+                                label="Description"
+                                onChange={(event) =>
+                                    setDescription(event.target.value)
+                                }
+                                labelPlacement="top"
+                                sx={{
+                                    alignItems: "flex-start",
+                                }}
+                            />
+                            <FormControlLabel
+                                control={
+                                    <TextField
+                                        variant="standard"
+                                        defaultValue={price}
+                                        sx={{ marginLeft: "5px" }}
+                                    />
+                                }
+                                sx={{
+                                    justifyContent: "flex-end",
+                                }}
+                                label="Price"
+                                onChange={(event) =>
+                                    setPrice(event.target.value)
+                                }
+                                labelPlacement="start"
+                            />
                             <FormControlLabel
                                 control={
                                     <Checkbox
                                         sx={{
+                                            marginLeft: "1em",
                                             color: red[800],
                                             "& .MuiSvgIcon-root": {
                                                 fontSize: 35,
@@ -105,18 +141,83 @@ export function ListedItemCard(props) {
                                                 color: red[600],
                                             },
                                         }}
+                                        checked={active}
+                                        onChange={() => setActive(!active)}
                                     />
                                 }
-                                label="Sold"
+                                label="Sold out"
                             />
                         </FormGroup>
+                    ) : (
+                        <>
+                            <CardContent
+                                sx={{ flex: "1 0 auto", textAlign: "left" }}
+                            >
+                                <Typography component="div" variant="h5">
+                                    {props.title}
+                                </Typography>
+
+                                <Typography variant="body2" component="div">
+                                    {props.description}
+                                </Typography>
+                            </CardContent>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "right",
+                                    justifyContent: "right",
+                                    pl: 1,
+                                    pb: 1,
+                                    pr: 1,
+                                }}
+                            >
+                                <Typography variant="body2">
+                                    {props.price}
+                                </Typography>
+                            </Box>
+                        </>
+                    )}
+
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "right",
+                            justifyContent: "right",
+                            pl: 1,
+                            pb: 1,
+                            pr: 1,
+                        }}
+                    >
+                        {edit ? (
+                            <FormGroup
+                                sx={{
+                                    pt: "3px",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                }}
+                            >
+                                <CustomButton
+                                    text="Cancel"
+                                    onClick={() => setEdit(false)}
+                                />
+                                <CustomButton
+                                    text="Save"
+                                    onClick={handleEdit}
+                                />
+                            </FormGroup>
+                        ) : (
+                            <CustomButton
+                                text="Edit"
+                                onClick={() => setEdit(true)}
+                            />
+                        )}
                     </Box>
                 </Box>
                 <CardMedia
                     component="img"
                     sx={{ width: "100%" }}
-                    image="/static/images/cards/live-from-space.jpg"
-                    alt="Live from space album cover"
+                    image=""
+                    alt=""
                 />
                 <Box
                     sx={{

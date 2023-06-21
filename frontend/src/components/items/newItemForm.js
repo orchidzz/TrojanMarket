@@ -1,4 +1,4 @@
-import { React } from "react";
+import { React, useState } from "react";
 import {
     Box,
     TextField,
@@ -12,6 +12,8 @@ import { ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import CustomButton from "../homepage/login/customButton";
+import { connect, useDispatch } from "react-redux";
+import { sellAction } from "../../actions/itemActions";
 
 const customTheme = createTheme({
     components: {
@@ -47,7 +49,23 @@ const customTheme = createTheme({
     },
 });
 
-export default function NewItemForm() {
+function NewItemForm({ userEmail }) {
+    const [title, setTitle] = useState("");
+    const [price, setPrice] = useState("");
+    const [imgs, setImgs] = useState(null);
+    const [description, setDescription] = useState("");
+    const dispatch = useDispatch();
+    function handleSubmit() {
+        var item = {
+            itemTitle: title,
+            itemPrice: price,
+            itemDescription: description,
+            itemImgs: imgs,
+            itemListedTime: Date.now(), // get current time in ms
+            userEmail: userEmail,
+        };
+        dispatch(sellAction(item));
+    }
     // need to preview images if possible
     return (
         <ThemeProvider theme={customTheme}>
@@ -68,6 +86,7 @@ export default function NewItemForm() {
                 >
                     <FormControlLabel
                         control={<TextField required variant="standard" />}
+                        onChange={(event) => setTitle(event.target.value)}
                         label="Title"
                         labelPlacement="start"
                     />
@@ -75,7 +94,6 @@ export default function NewItemForm() {
                     <FormControlLabel
                         control={
                             <TextField
-                                required
                                 variant="standard"
                                 multiline
                                 rows={5}
@@ -83,6 +101,7 @@ export default function NewItemForm() {
                             />
                         }
                         label="Description"
+                        onChange={(event) => setDescription(event.target.value)}
                         labelPlacement="top"
                         sx={{
                             alignItems: "flex-start",
@@ -91,6 +110,7 @@ export default function NewItemForm() {
                     <FormControlLabel
                         control={<TextField required variant="standard" />}
                         label="Price"
+                        onChange={(event) => setPrice(event.target.value)}
                         labelPlacement="start"
                     />
                     <FormControlLabel
@@ -131,6 +151,9 @@ export default function NewItemForm() {
                                         hidden
                                         accept="image/*"
                                         type="file"
+                                        onChange={(event) =>
+                                            setImgs(event.target.value)
+                                        }
                                     />
                                     <PhotoCamera />
                                 </IconButton>
@@ -139,9 +162,14 @@ export default function NewItemForm() {
                         label="Photos"
                         labelPlacement="start"
                     />
-                    <CustomButton text="Submit" />
+                    <CustomButton text="Submit" onClick={handleSubmit} />
                 </FormGroup>
             </Box>
         </ThemeProvider>
     );
 }
+const mapStateToProps = (state) => {
+    return { userEmail: state.userEmail };
+};
+
+export default connect(mapStateToProps)(NewItemForm);

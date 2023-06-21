@@ -7,7 +7,11 @@ function CustomButton(props) {
     return (
         <ThemeProvider theme={uscTheme}>
             <div>
-                <Button variant="contained" sx={{ margin: 1 }}>
+                <Button
+                    variant="contained"
+                    sx={{ margin: 1 }}
+                    onClick={props.onClick}
+                >
                     {props.text}
                 </Button>
             </div>

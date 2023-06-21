@@ -1,4 +1,4 @@
-import React from "react";
+import { React, useEffect, useState } from "react";
 import {
     Box,
     FormControlLabel,
@@ -9,8 +9,31 @@ import {
 } from "@mui/material";
 import Rating from "./rating";
 import CustomButton from "../homepage/login/customButton";
+import { useSignOut } from "../../constants/auth";
+import { connect, useDispatch } from "react-redux";
+import {
+    getProfileAction,
+    updateProfileAction,
+} from "../../actions/userActions";
 
-export default function SettingsPage(props) {
+function SettingsPage({ props }) {
+    const [userName, setUserName] = useState(props.userName);
+    const [userImg, setUserImg] = useState(""); // need work on uploading img to avatar
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(getProfileAction(props.userEmail));
+    });
+    if (!props) {
+        return;
+    }
+    function handleUpdateBtn() {
+        var user = {
+            userName: userName,
+            userImg: userImg,
+            userEmail: props.userEmail,
+        };
+        dispatch(updateProfileAction(user));
+    }
     return (
         <Box
             sx={{
@@ -53,7 +76,7 @@ export default function SettingsPage(props) {
                                 height: 105,
                                 backgroundColor: "rgb(153, 27, 27)",
                             }}
-                            src={props.userImg}
+                            //need fixing
                         >
                             HN
                         </Avatar>
@@ -65,12 +88,15 @@ export default function SettingsPage(props) {
                                     <TextField
                                         required
                                         variant="standard"
-                                        defaultValue={props.name}
+                                        defaultValue={props.userName}
                                         sx={{
                                             color: "black",
                                             pl: "10px",
                                             width: 150,
                                         }}
+                                        onChange={(event) =>
+                                            setUserName(event.target.value)
+                                        }
                                     />
                                 }
                                 sx={{
@@ -82,11 +108,27 @@ export default function SettingsPage(props) {
                                 label="Name"
                                 labelPlacement="start"
                             />
-                            <CustomButton text="Update" />
+                            <CustomButton
+                                text="Update"
+                                onClick={handleUpdateBtn}
+                            />
                         </FormGroup>
                     </FormGroup>
+                    <CustomButton text="Sign out" onClick={useSignOut} />
                 </Grid>
             </Grid>
         </Box>
     );
 }
+
+const mapStateToProps = (state) => {
+    return {
+        props: {
+            userName: state.userReducer.userName,
+            userEmail: state.userReducer.userEmail,
+            userImg: state.userReducer.userImg,
+        },
+    };
+};
+
+export default connect(mapStateToProps)(SettingsPage);

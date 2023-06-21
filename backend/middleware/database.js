@@ -11,8 +11,6 @@ class Database {
             sessionToken: process.env.AWS_SESSION_TOKEN,
             region: process.env.AWS_REGION,
         });
-        // Create a DynamoDB instance
-        // AWS.DynamoDB = new AWS.DynamoDB();
         // Create a S3 instance
         this.s3 = new AWS.S3();
     }
@@ -123,8 +121,7 @@ class Database {
             },
         };
         const result = await client.get(params).promise();
-        const user = result.Item;
-        console.log(user); // debug
+        const user = result.It;
         const userImg = await this.#getUserImg(userEmail);
         user.img = userImg;
         return user;
@@ -153,8 +150,6 @@ class Database {
             };
             const client = new AWS.DynamoDB.DocumentClient();
             const result = await client.update(params).promise();
-            const updatedUser = result.Attributes;
-            console.log(updatedUser); //debug
         }
     }
 
@@ -176,7 +171,6 @@ class Database {
             var imgs = await this.#getItemsImg(item.sk);
             item.imgs = imgs;
         });
-        console.log(items); // debug
         return items;
     }
 
@@ -264,7 +258,6 @@ class Database {
         const client = new AWS.DynamoDB.DocumentClient();
         const result = await client.update(params).promise();
         const updatedItem = result.Attributes;
-        console.log(updatedItem); //debug
     }
 
     async buyItem(userEmail, itemId) {
@@ -285,8 +278,6 @@ class Database {
         };
         const client = new AWS.DynamoDB.DocumentClient();
         const result = await client.update(params).promise();
-        const updatedItem = result.Attributes;
-        console.log(updatedItem); //debug
     }
 }
 module.exports = Database;
