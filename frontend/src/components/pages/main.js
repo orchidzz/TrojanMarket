@@ -9,14 +9,7 @@ function MainPage({ cards }) {
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(getItemsAction());
-    });
-    if (!cards) {
-        return (
-            <>
-                <NavBar />
-            </>
-        );
-    }
+    }, []);
     return (
         <>
             <NavBar />
@@ -26,8 +19,6 @@ function MainPage({ cards }) {
 }
 
 const mapStateToProps = (state) => {
-    console.log(state);
-    console.log(state.getItemsReducer);
     return {
         cards: state.getItemsReducer.items.map((item) => {
             return (

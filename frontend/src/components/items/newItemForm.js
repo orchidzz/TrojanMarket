@@ -52,21 +52,29 @@ const customTheme = createTheme({
 function NewItemForm({ userEmail }) {
     const [title, setTitle] = useState("");
     const [price, setPrice] = useState("");
-    const [imgs, setImgs] = useState(null);
+    const [imgs, setImgs] = useState([]);
     const [description, setDescription] = useState("");
+    const [slideIdx, setSlideIdx] = useState(0);
     const dispatch = useDispatch();
     function handleSubmit() {
+        var base64Imgs = [];
+        imgs.forEach((img) => {
+            var reader = new FileReader();
+            reader.readAsDataURL(img);
+            reader.onloadend = () => {
+                base64Imgs.push(reader.result);
+            };
+        });
         var item = {
             itemTitle: title,
             itemPrice: price,
             itemDescription: description,
-            itemImgs: imgs,
+            itemImgs: base64Imgs,
             itemListedTime: Date.now(), // get current time in ms
             userEmail: userEmail,
         };
         dispatch(sellAction(item));
     }
-    // need to preview images if possible
     return (
         <ThemeProvider theme={customTheme}>
             <Box
@@ -135,8 +143,13 @@ function NewItemForm({ userEmail }) {
                                     <input
                                         hidden
                                         accept="image/*"
-                                        multiple
                                         type="file"
+                                        onChange={(event) =>
+                                            setImgs([
+                                                ...imgs,
+                                                event.target.files,
+                                            ])
+                                        }
                                     />
                                 </Button>
                                 <IconButton
@@ -152,7 +165,10 @@ function NewItemForm({ userEmail }) {
                                         accept="image/*"
                                         type="file"
                                         onChange={(event) =>
-                                            setImgs(event.target.value)
+                                            setImgs([
+                                                ...imgs,
+                                                event.target.files[0],
+                                            ])
                                         }
                                     />
                                     <PhotoCamera />
@@ -162,6 +178,50 @@ function NewItemForm({ userEmail }) {
                         label="Photos"
                         labelPlacement="start"
                     />
+                    <div>
+                        {imgs.length > 0 && (
+                            <>
+                                <img
+                                    key={slideIdx}
+                                    src={URL.createObjectURL(
+                                        new Blob(imgs[slideIdx])
+                                    )}
+                                    alt={slideIdx}
+                                    style={{
+                                        width: "auto",
+                                        height: "13rem",
+                                        margin: "10px",
+                                    }}
+                                />
+                                <div>
+                                    <button
+                                        onClick={() =>
+                                            setSlideIdx(
+                                                slideIdx !== 0
+                                                    ? slideIdx - 1
+                                                    : 0
+                                            )
+                                        }
+                                        disabled={slideIdx === 0}
+                                    >
+                                        Previous
+                                    </button>
+                                    <button
+                                        onClick={() =>
+                                            setSlideIdx(
+                                                slideIdx !== imgs.length - 1
+                                                    ? slideIdx + 1
+                                                    : imgs.length - 1
+                                            )
+                                        }
+                                        disabled={slideIdx === imgs.length - 1}
+                                    >
+                                        Next
+                                    </button>
+                                </div>
+                            </>
+                        )}
+                    </div>
                     <CustomButton text="Submit" onClick={handleSubmit} />
                 </FormGroup>
             </Box>

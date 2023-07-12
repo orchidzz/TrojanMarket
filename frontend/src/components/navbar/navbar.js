@@ -2,7 +2,7 @@ import { React, useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import { Link } from "react-router-dom";
 import { BottomNavigation, BottomNavigationAction } from "@mui/material";
-import { Home, AccountCircle, Sell, Search } from "@mui/icons-material/";
+import { Home, AccountCircle, Sell, Chat } from "@mui/icons-material/";
 import SearchBar from "../items/searchBar";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
@@ -10,7 +10,6 @@ import { getAuth } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
 export default function NavBar() {
-    const [searchOpen, setSearchOpen] = useState(false);
     const auth = getAuth();
     const navigate = useNavigate();
     useEffect(() => {
@@ -34,7 +33,6 @@ export default function NavBar() {
                 },
             }}
         >
-            {searchOpen && <SearchBar />}
             <BottomNavigation
                 showLabels
                 sx={{
@@ -50,22 +48,19 @@ export default function NavBar() {
                     icon={<Home sx={{ color: "black" }} />}
                     component={Link}
                     to="/home"
-                    onClick={() => setSearchOpen(false)}
                 />
                 <BottomNavigationAction
-                    label="Search"
+                    label="Chat"
                     sx={{ color: "black" }}
-                    icon={<Search sx={{ color: "black" }} />}
-                    onClick={() => setSearchOpen(!searchOpen)}
+                    icon={<Chat sx={{ color: "black" }} />}
                     component={Link}
-                    to="/search"
+                    to="/chat"
                 />
                 <Fab
                     color="primary"
                     aria-label="add"
                     component={Link}
                     to="/add"
-                    onClick={() => setSearchOpen(false)}
                 >
                     <AddIcon />
                 </Fab>
@@ -75,7 +70,6 @@ export default function NavBar() {
                     icon={<Sell sx={{ color: "black" }} />}
                     component={Link}
                     to="/sold"
-                    onClick={() => setSearchOpen(false)}
                 />
                 <BottomNavigationAction
                     label="Profile"
@@ -83,7 +77,6 @@ export default function NavBar() {
                     icon={<AccountCircle sx={{ color: "black" }} />}
                     component={Link}
                     to="/profile"
-                    onClick={() => setSearchOpen(false)}
                 />
             </BottomNavigation>
         </Box>

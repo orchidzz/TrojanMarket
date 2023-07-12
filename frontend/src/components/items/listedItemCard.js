@@ -22,6 +22,7 @@ import { ThemeProvider } from "@mui/material";
 import uscTheme from "../homepage/styles";
 import { useDispatch } from "react-redux";
 import { updateItemAction } from "../../actions/itemActions";
+import ChatDialog from "../chat/chatDialog";
 
 export default function ListedItemCard(props) {
     const [open, setOpen] = useState(false);
@@ -32,6 +33,8 @@ export default function ListedItemCard(props) {
     const [active, setActive] = useState(props.active);
     const [edit, setEdit] = useState(false);
     const dispatch = useDispatch();
+    const [slideIdx, setSlideIdx] = useState(0);
+
     function handleEdit() {
         const item = {
             itemId: itemId,
@@ -213,12 +216,44 @@ export default function ListedItemCard(props) {
                         )}
                     </Box>
                 </Box>
-                <CardMedia
-                    component="img"
-                    sx={{ width: "100%" }}
-                    image=""
-                    alt=""
-                />
+                {props.imgs.length > 0 && (
+                    <>
+                        <img
+                            key={slideIdx}
+                            src={props.imgs[slideIdx]}
+                            alt={slideIdx}
+                            style={{
+                                width: "auto",
+                                height: "13rem",
+                                margin: "10px",
+                            }}
+                        />
+                        <div>
+                            <button
+                                onClick={() =>
+                                    setSlideIdx(
+                                        slideIdx !== 0 ? slideIdx - 1 : 0
+                                    )
+                                }
+                                disabled={slideIdx === 0}
+                            >
+                                Previous
+                            </button>
+                            <button
+                                onClick={() =>
+                                    setSlideIdx(
+                                        slideIdx !== props.imgs.length - 1
+                                            ? slideIdx + 1
+                                            : props.imgs.length - 1
+                                    )
+                                }
+                                disabled={slideIdx === props.imgs.length - 1}
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </>
+                )}
                 <Box
                     sx={{
                         bgcolor: red[100],
@@ -251,10 +286,48 @@ export default function ListedItemCard(props) {
                                 }}
                             />
                         </ListItemButton>
-                        {open && (
-                            <ListItemButton sx={{ width: "100%", pb: 0 }}>
+                        {open &&
+                            props.buyers.map((buyer) => (
+                                <ListItemButton
+                                    key={buyer.email}
+                                    sx={{ width: "100%", pb: 0 }}
+                                >
+                                    <ListItemText
+                                        primary={buyer.email}
+                                        sx={{ p: 0, minHeight: 32 }}
+                                    />
+                                    <IconButton
+                                        type="button"
+                                        sx={{
+                                            p: "5px",
+                                            b: "5px",
+                                            mb: "5px",
+                                            color: "black",
+                                        }}
+                                    >
+                                        <SendIcon
+                                            onClick={() => {
+                                                return (
+                                                    <ChatDialog
+                                                        user={props.buyer}
+                                                    />
+                                                );
+                                            }}
+                                        />
+                                    </IconButton>
+                                </ListItemButton>
+                            ))}
+                    </List>
+                </Box>
+            </Card>
+        </ThemeProvider>
+    );
+}
+
+{
+    /* <ListItemButton sx={{ width: "100%", pb: 0 }}>
                                 <ListItemText
-                                    primary="hangtngu@usc.edu"
+                                    primary={}
                                     sx={{ p: 0, minHeight: 32 }}
                                 />
                                 <IconButton
@@ -266,32 +339,7 @@ export default function ListedItemCard(props) {
                                         color: "black",
                                     }}
                                 >
-                                    <SendIcon />
+                                    <SendIcon onClick={()=>{return <ChatDialog user={}/>}}/>
                                 </IconButton>
-                            </ListItemButton>
-                        )}
-                    </List>
-                </Box>
-            </Card>
-        </ThemeProvider>
-    );
+                            </ListItemButton> */
 }
-
-// props.buyers.map((buyer) => (
-//     <ListItemButton
-//         key={buyer.email}
-//         sx={{
-//             py: 0,
-//             minHeight: 32,
-//             color: "rgba(255,255,255,.8)",
-//         }}
-//     >
-//         <ListItemText
-//             primary={buyer.email}
-//             primaryTypographyProps={{
-//                 fontSize: 14,
-//                 fontWeight: "medium",
-//             }}
-//         />
-//     </ListItemButton>
-// ))

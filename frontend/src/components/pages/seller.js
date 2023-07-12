@@ -1,61 +1,33 @@
-import { React, useEffect, useState } from "react";
+import { React, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import {
     Box,
     FormControlLabel,
-    TextField,
+    FormLabel,
     FormGroup,
     Grid,
     Avatar,
 } from "@mui/material";
-import Rating from "./rating";
+import RatingDialog from "../user/ratingDialog";
+import Rating from "../user/rating";
 import CustomButton from "../homepage/login/customButton";
-import { signOut } from "../../constants/auth";
 import { connect, useDispatch } from "react-redux";
-import {
-    getProfileAction,
-    updateProfileAction,
-    signoutAction,
-} from "../../actions/userActions";
+import { getSellerAction } from "../../actions/userActions";
+import ChatDialog from "../chat/chatDialog";
 
-function SettingsPage({ props }) {
-    const [userName, setUserName] = useState(props.userName);
-    const [userImg, setUserImg] = useState(props.userImg);
+function SellerPage({ props }) {
+    let { sellerEmail } = useParams();
     const dispatch = useDispatch();
     useEffect(() => {
-        dispatch(getProfileAction());
+        dispatch(getSellerAction(sellerEmail));
     }, []);
     if (!props) {
-        return;
+        return <ChatDialog receiver={sellerEmail} />;
     }
-    function handleUpdateBtn() {
-        try {
-            var reader = new FileReader();
-            reader.readAsDataURL(userImg);
-            reader.onloadend = () => {
-                var user = {
-                    userName: userName,
-                    userImg: reader.result,
-                    userEmail: props.userEmail,
-                };
-                dispatch(updateProfileAction(user));
-            };
-        } catch (e) {
-            var user = {
-                userName: userName,
-                userImg: null,
-                userEmail: props.userEmail,
-            };
-            dispatch(updateProfileAction(user));
-        }
+    function handleContactBtn() {}
+    function handleRateBtn() {
+        return <RatingDialog seller={sellerEmail} />;
     }
-    const isUrl = (str) => {
-        try {
-            new URL(str);
-            return true;
-        } catch (error) {
-            return false;
-        }
-    };
 
     return (
         <Box
@@ -101,20 +73,10 @@ function SettingsPage({ props }) {
                                     backgroundColor: "rgb(153, 27, 27)",
                                 }}
                                 src={
-                                    userImg === null ||
-                                    userImg === undefined ||
-                                    isUrl(userImg)
-                                        ? userImg
-                                        : URL.createObjectURL(userImg)
+                                    props.userImg !== null
+                                        ? URL.createObjectURL(props.userImg)
+                                        : props.userImg
                                 }
-                            />
-                            <input
-                                hidden
-                                accept="image/*"
-                                type="file"
-                                onChange={(event) => {
-                                    setUserImg(event.target.files[0]);
-                                }}
                             />
                         </label>
 
@@ -123,18 +85,15 @@ function SettingsPage({ props }) {
                         >
                             <FormControlLabel
                                 control={
-                                    <TextField
+                                    <FormLabel
                                         required
                                         variant="standard"
-                                        defaultValue={userName}
+                                        defaultValue={props.userName}
                                         sx={{
                                             color: "black",
                                             pl: "10px",
                                             width: 150,
                                         }}
-                                        onChange={(event) =>
-                                            setUserName(event.target.value)
-                                        }
                                     />
                                 }
                                 sx={{
@@ -146,19 +105,10 @@ function SettingsPage({ props }) {
                                 label="Name"
                                 labelPlacement="start"
                             />
-                            <CustomButton
-                                text="Update"
-                                onClick={handleUpdateBtn}
-                            />
                         </FormGroup>
                     </FormGroup>
-                    <CustomButton
-                        text="Sign out"
-                        onClick={async () => {
-                            await signOut();
-                            dispatch(signoutAction());
-                        }}
-                    />
+                    <CustomButton text="Rate" onClick={handleRateBtn} />
+                    <CustomButton text="Contact" onClick={handleContactBtn} />
                 </Grid>
             </Grid>
         </Box>
@@ -168,14 +118,14 @@ function SettingsPage({ props }) {
 const mapStateToProps = (state) => {
     return {
         props: {
-            userName: state.userReducer.userName,
-            userEmail: state.userReducer.userEmail,
-            userImg: state.userReducer.userImg,
-            trustworthiness: state.userReducer.trustworthiness,
-            timeliness: state.userReducer.timeliness,
-            responsiveness: state.userReducer.responsiveness,
+            userName: state.sellerReducer.sellerName,
+            userEmail: state.sellerReducer.sellerEmail,
+            userImg: state.sellerReducer.sellerImg,
+            trustworthiness: state.sellerReducer.sellerTrustworthiness,
+            timeliness: state.sellerReducer.sellerTimeliness,
+            responsiveness: state.sellerReducer.sellerResponsiveness,
         },
     };
 };
 
-export default connect(mapStateToProps)(SettingsPage);
+export default connect(mapStateToProps)(SellerPage);

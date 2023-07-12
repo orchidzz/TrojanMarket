@@ -5,7 +5,9 @@ import {
     UPDATE_PROFILE_SUCCESS,
     UPDATE_PROFILE_FAILURE,
     MESSAGE,
+    MESSAGE_FAILED,
     RATE,
+    RATE_FAILED,
     GET_PROFILE,
     GET_PROFILE_SUCCESS,
     GET_PROFILE_FAILURE,
@@ -15,20 +17,27 @@ import {
     UPDATE_ITEM,
     UPDATE_ITEM_SUCCESS,
     UPDATE_ITEM_FAILURE,
+    GET_SELLER,
+    GET_SELLER_SUCCESS,
+    GET_SELLER_FAILURE,
 } from "../constants/actiontypes";
-import { initialUserState, initialAuthState } from "../constants/initialStates";
+import {
+    initialUserState,
+    initialAuthState,
+    initialSellerState,
+} from "../constants/initialStates";
 
 export const authReducer = (state = initialAuthState, action) => {
     switch (action.type) {
         case AUTHENTICATED:
             return {
-                ...state,
+                error: null,
                 loading: false,
                 token: action.payload.token,
                 userEmail: action.payload.userEmail,
             };
         case NOT_AUTHENTICATED:
-            return state;
+            return { ...initialAuthState, error: action.payload.error };
         default:
             return state;
     }
@@ -104,12 +113,35 @@ export const userReducer = (state = initialUserState, action) => {
             return {
                 ...state,
                 loading: false,
-                userEmail: action.payload.userEmail,
-                userName: action.payload.userName,
-                userImg: action.payload.userImg,
+                userEmail: action.payload.sk,
+                userName: action.payload.username,
+                userImg: action.payload.img,
                 listedItems: action.payload.listedItems,
+                chats: action.payload.chats,
+                responsiveness: action.payload.responsiveness,
+                trustworthiness: action.payload.trustworthiness,
+                timeliness: action.payload.timeliness,
             };
         case GET_PROFILE_FAILURE:
+            return {
+                ...state,
+                loading: false,
+                error: action.payload,
+            };
+        case MESSAGE:
+            let receiver = action.payload.receiver;
+            let new_chats = state.chats;
+            if (new_chats[receiver] === undefined) {
+                new_chats[receiver] = action.payload;
+            } else {
+                new_chats[receiver].push(action.payload);
+            }
+            return {
+                ...state,
+                loading: false,
+                chats: new_chats,
+            };
+        case MESSAGE_FAILED:
             return {
                 ...state,
                 loading: false,
@@ -120,50 +152,38 @@ export const userReducer = (state = initialUserState, action) => {
     }
 };
 
-// export const updateProfileReducer = (state = initialState, action) => {
-//     switch (action.type) {
-//         case UPDATE_PROFILE:
-//             return {
-//                 loading: true,
-//                 error: null,
-//             };
-//         case UPDATE_PROFILE_SUCCESS:
-//             return {
-//                 loading: false,
-//                 userEmail: action.payload.userEmail,
-//                 userName: action.payload.userName,
-//                 userImg: action.payload.userImg,
-//             };
-//         case UPDATE_PROFILE_FAILURE:
-//             return {
-//                 loading: false,
-//                 error: action.payload,
-//             };
-//         default:
-//             return state;
-//     }
-// };
-// export const getProfileReducer = (state = initialState, action) => {
-//     switch (action.type) {
-//         case GET_PROFILE:
-//             return {
-//                 loading: true,
-//                 error: null,
-//             };
-//         case GET_PROFILE_SUCCESS:
-//             return {
-//                 loading: false,
-//                 userEmail: action.payload.userEmail,
-//                 userName: action.payload.userName,
-//                 userImg: action.payload.userImg,
-//                 listedItems: action.payload.listedItems,
-//             };
-//         case GET_PROFILE_FAILURE:
-//             return {
-//                 loading: false,
-//                 error: action.payload,
-//             };
-//         default:
-//             return state;
-//     }
-// };
+export const rateReducer = (
+    state = { loading: false, error: null },
+    action
+) => {
+    switch (action.type) {
+        case RATE:
+            return state;
+        case RATE_FAILED:
+            return { loading: false, error: action.payload };
+        default:
+            return state;
+    }
+};
+
+export const sellerReducer = (state = initialSellerState, action) => {
+    switch (action.type) {
+        case GET_SELLER:
+            return state;
+        case GET_SELLER_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                sellerEmail: action.payload.sk,
+                sellerName: action.payload.username,
+                sellerImg: action.payload.img,
+                sellerResponsiveness: action.payload.responsiveness,
+                sellerTrustworthiness: action.payload.trustworthiness,
+                sellerTimeliness: action.payload.timeliness,
+            };
+        case GET_SELLER_FAILURE:
+            return { ...state, loading: false, error: action.payload };
+        default:
+            return state;
+    }
+};

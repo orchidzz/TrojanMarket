@@ -1,19 +1,26 @@
-import React from "react";
+import { React, useState } from "react";
 import { Card, CardContent, CardMedia, Box, Typography } from "@mui/material";
 import CustomButton from "../homepage/login/customButton";
 import { ThemeProvider } from "@mui/material";
 import uscTheme from "../homepage/styles";
+import { useNavigate } from "react-router-dom";
 
 export default function ItemCard(props) {
     /* 
     props: {title: "",
             price: "",
-            images: [],
+            imgs: [],
             description: "",
             sellerRating: "",
             seller: ""
         }
     */
+    const [slideIdx, setSlideIdx] = useState(0);
+    const navigate = useNavigate();
+    function handleShowUser() {
+        //navigate to new page of user
+        navigate(`/user/${props.seller}`);
+    }
     return (
         <ThemeProvider theme={uscTheme}>
             <Card
@@ -39,7 +46,11 @@ export default function ItemCard(props) {
                         <Typography component="div" variant="h5">
                             {props.title}
                         </Typography>
-                        <Typography variant="subtitle1" component="div">
+                        <Typography
+                            variant="subtitle1"
+                            component="div"
+                            onClick={handleShowUser}
+                        >
                             {props.seller} {props.sellerRating}
                         </Typography>
 
@@ -71,14 +82,46 @@ export default function ItemCard(props) {
                         }}
                     >
                         <CustomButton text="Buy" />
-                        <CustomButton text="Message Seller" />
                     </Box>
                 </Box>
-                <CardMedia
-                    component="img"
-                    sx={{ width: "100%" }}
-                    image={props.imgs}
-                />
+                {props.imgs.length > 0 && (
+                    <>
+                        <img
+                            key={slideIdx}
+                            src={props.imgs[slideIdx]}
+                            alt={slideIdx}
+                            style={{
+                                width: "auto",
+                                height: "13rem",
+                                margin: "10px",
+                            }}
+                        />
+                        <div>
+                            <button
+                                onClick={() =>
+                                    setSlideIdx(
+                                        slideIdx !== 0 ? slideIdx - 1 : 0
+                                    )
+                                }
+                                disabled={slideIdx === 0}
+                            >
+                                Previous
+                            </button>
+                            <button
+                                onClick={() =>
+                                    setSlideIdx(
+                                        slideIdx !== props.imgs.length - 1
+                                            ? slideIdx + 1
+                                            : props.imgs.length - 1
+                                    )
+                                }
+                                disabled={slideIdx === props.imgs.length - 1}
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </>
+                )}
             </Card>
         </ThemeProvider>
     );

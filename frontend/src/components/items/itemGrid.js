@@ -6,7 +6,7 @@ export default function ItemGrid(props) {
     props: {data: list of items info} = {data: [{title: 1, etc}, {title; 2, etc}]}
     */
     // dynamically create items within the grid
-    if (props.items == null) {
+    if (props.items === null || props.items === undefined) {
         return;
     } else if (props.items.length === 0) {
         return;

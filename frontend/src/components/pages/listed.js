@@ -3,20 +3,8 @@ import NavBar from "../navbar/navbar";
 import ItemGrid from "../items/itemGrid";
 import { connect, useDispatch } from "react-redux";
 import ListedItemCard from "../items/listedItemCard";
-import { getProfileAction } from "../../actions/userActions";
 
 function ListedItemsPage({ cards }) {
-    const dispatch = useDispatch();
-    useEffect(() => {
-        dispatch(getProfileAction());
-    });
-    if (!cards) {
-        return (
-            <>
-                <NavBar />
-            </>
-        );
-    }
     return (
         <>
             <NavBar />
