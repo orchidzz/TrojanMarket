@@ -3,7 +3,7 @@ const db = new Database();
 require("dotenv").config();
 
 async function buyItem(req, res) {
-    await db.buyItem(req.userEmail, req.itemId);
+    await db.buyItem(req.query.userEmail, req.query.itemId);
 }
 async function sellItem(req, res) {
     const data = req.body;

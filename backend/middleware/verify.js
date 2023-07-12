@@ -11,12 +11,22 @@ const verify = (req, res, next) => {
     admin
         .auth()
         .verifyIdToken(token)
-        .then((decodedToken) => {
-            req.user = decodedToken;
-            next();
+        .then(async (decodedToken) => {
+            const uid = decodedToken.uid;
+            try {
+                const userRecord = await admin.auth().getUser(uid);
+                const email = userRecord.providerData.find(
+                    (provider) => provider.providerId === "google.com"
+                ).email;
+                req.query.userEmail = email;
+                next();
+            } catch (error) {
+                console.error("Email not found: ", error);
+                throw error;
+            }
         })
         .catch((error) => {
-            return res.status(403).json({ error: "Invalid token" });
+            return res.status(403).json({ error: "Invalid token: ", error });
         });
 };
 

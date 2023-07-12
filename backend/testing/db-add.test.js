@@ -31,6 +31,24 @@ afterAll(async () => {
         },
     };
     await client.delete(itemParams).promise();
+
+    // delete chats
+    const chat1Params = {
+        TableName: process.env.CYCLIC_DB,
+        Key: {
+            pk: "chat",
+            sk: "trojan1@usc.edu-trojan2@usc.edu-12346",
+        },
+    };
+    const chat2Params = {
+        TableName: process.env.CYCLIC_DB,
+        Key: {
+            pk: "chat",
+            sk: "trojan2@usc.edu-trojan1@usc.edu-123465",
+        },
+    };
+    await client.delete(chat1Params).promise();
+    await client.delete(chat2Params).promise();
 }, 50000);
 
 test("add item", async () => {
@@ -53,4 +71,17 @@ test("add user", async () => {
     expect(user.pk).toBe("user");
     expect(user.sk).toBe("trojan1@usc.edu");
     expect(user.img).toBeFalsy();
+}, 50000);
+
+test("add chats", async () => {
+    await db.addChat("trojan1@usc.edu", "trojan2@usc.edu", 12345, "Hi 2");
+    await db.addChat("trojan2@usc.edu", "trojan1@usc.edu", 12346, "Hi 1");
+    const chats1 = await db.getChatsByUser("trojan1@usc.edu");
+    expect(Object.keys(chats1).length).toEqual(1);
+    expect(chats1["trojan2@usc.edu"].length).toEqual(2);
+    expect(chats1["trojan2@usc.edu"][0].message).toBe("Hi 2");
+    const chats2 = await db.getChatsByUser("trojan2@usc.edu");
+    console.log(chats2);
+    expect(chats2["trojan1@usc.edu"].length).toEqual(2);
+    expect(chats2["trojan1@usc.edu"][0].message).toBe("Hi 2");
 }, 50000);

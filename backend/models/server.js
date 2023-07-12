@@ -1,16 +1,12 @@
+const admin = require("firebase-admin");
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
 require("dotenv").config();
-import { getProfile, updateProfile } from "../controllers/user";
-import {
-    buyItem,
-    sellItem,
-    updateItem,
-    getActiveItems,
-} from "../controllers/items";
-import verify from "../middleware/verify";
-import authorize from "../middleware/auth";
+const user = require("../controllers/user");
+const items = require("../controllers/items");
+const verify = require("../middleware/verify");
+const { cert } = require("firebase-admin/app");
 class Server {
     constructor() {
         this.app = express();
@@ -23,6 +19,23 @@ class Server {
     middlewares() {
         this.app.use(cors()); // Enable CORS
         this.app.use(express.json());
+        const serviceAccount = require("./../trojanmarket-firebase.json");
+        admin.initializeApp({
+            credential: admin.credential.cert({
+                type: "service_account",
+                project_id: process.env.FIREBASE_PROJECT_ID,
+                private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+                private_key: process.env.FIREBASE_PRIVATE_KEY,
+                client_email: process.env.FIREBASE_CLIENT_EMAIL,
+                client_id: process.env.FIREBASE_CLIENT_ID,
+                auth_uri: "https://accounts.google.com/o/oauth2/auth",
+                token_uri: "https://oauth2.googleapis.com/token",
+                auth_provider_x509_cert_url:
+                    "https://www.googleapis.com/oauth2/v1/certs",
+                client_x509_cert_url: process.env.FIREBASE_CLIENT_X509_CERT_URL,
+                universe_domain: "googleapis.com",
+            }),
+        });
     }
 
     // Bind controllers to routes
@@ -32,7 +45,7 @@ class Server {
             express.static(path.join(__dirname, "../../frontend", "build"))
         );
         this.app.get(
-            ["/", "/home", "/profile", "/add", "/sold", "/search"],
+            ["/", "/home", "/profile", "/add", "/sold", "/chat"],
             (req, res) => {
                 res.sendFile(
                     path.join(
@@ -44,19 +57,20 @@ class Server {
                 );
             }
         );
+        // middleware for verifying authorization
+        this.app.use(verify);
         // post routes
-        this.app.post("/api/updateUser", verify, updateProfile(req, res));
-        this.app.post("/api/buy", verify, buyItem(req, res));
-        this.app.post("/api/sell", verify, sellItem(req, res));
-        this.app.post("/api/updateItem", verify, updateItem(req, res));
+        this.app.post("/api/updateUser", user.updateProfile);
+        this.app.post("/api/buy", items.buyItem);
+        this.app.post("/api/sell", items.sellItem);
+        this.app.post("/api/updateItem", items.updateItem);
+        this.app.post("/api/rate", user.rateSeller);
+        this.app.post("/api/message", user.addChat);
 
         // get routes
-        this.app.get("/api/profile", verify, getProfile(req, res));
-        this.app.get("/api/items", verify, getActiveItems(req, res));
-        this.app.get("/api/auth", async (req, res) => {
-            const token = await authorize(req.token);
-            res.json(token);
-        });
+        this.app.get("/api/profile", user.getProfile);
+        this.app.get("/api/items", items.getActiveItems);
+        this.app.get("api/seller", user.getSeller);
     }
 
     listen() {
