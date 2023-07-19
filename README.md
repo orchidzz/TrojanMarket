@@ -19,3 +19,4 @@ Note: cannot host this on Cyclic despite using its AWS storage features because 
 - run ```node app.js``` in either ```/``` or ```/backend```
 
 ## Some looks
+![My project-1](https://github.com/orchidzz/TrojanMarket/assets/65925715/0f266613-1ed3-4a48-8d68-0299adf127d2)
