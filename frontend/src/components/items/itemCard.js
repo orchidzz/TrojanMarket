@@ -15,6 +15,9 @@ export default function ItemCard(props) {
             seller: ""
         }
     */
+    const [imgs, setImgs] = useState(
+        props.imgs !== undefined ? props.imgs : []
+    );
     const [slideIdx, setSlideIdx] = useState(0);
     const navigate = useNavigate();
     function handleShowUser() {
@@ -84,7 +87,7 @@ export default function ItemCard(props) {
                         <CustomButton text="Buy" />
                     </Box>
                 </Box>
-                {props.imgs.length > 0 && (
+                {imgs.length > 0 && (
                     <>
                         <img
                             key={slideIdx}

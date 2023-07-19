@@ -1,5 +1,6 @@
 const AWS = require("aws-sdk");
 const fs = require("fs");
+const { resolve } = require("path");
 require("dotenv").config();
 
 class Database {
@@ -19,7 +20,7 @@ class Database {
             const params = {
                 Bucket: process.env.CYCLIC_BUCKET_NAME,
                 Key: userEmail,
-                Expires: 3600, //expires in 1 hour
+                Expires: 7200, //expires in 2 hour
             };
             var data = this.s3.getSignedUrl("getObject", params);
 
@@ -40,26 +41,31 @@ class Database {
             const params = {
                 Bucket: process.env.CYCLIC_BUCKET_NAME,
                 Prefix: itemId + "/",
-                Expires: 3600, //expires in 1 hour
             };
             var res = [];
-            const data = await this.s3.listObjectsV2(params);
+            const data = await this.s3.listObjectsV2(params).promise();
+            if (data.Contents === undefined) {
+                var err = new Error();
+                err.statusCode = 404;
+                throw err;
+            }
             data.Contents.map((img) => {
                 const urlParams = {
                     Bucket: process.env.CYCLIC_BUCKET_NAME,
                     Key: img.Key,
-                    Expires: 3600, //expires in 1 hour
+                    Expires: 7200, //expires in 2 hour
                 };
                 var url = this.s3.getSignedUrl("getObject", urlParams);
                 res.push(url);
             });
+            return res;
         } catch (err) {
             if (err.statusCode === 404) {
                 console.log("Item's images not found");
             } else {
                 console.error("Error retrieving item's images:", err);
             }
-            return null;
+            return [];
         }
     }
 
@@ -214,10 +220,18 @@ class Database {
         const result = await client.query(params).promise();
 
         const items = result.Items;
+        var promises = [];
         items.forEach(async (item) => {
-            var imgs = await this.#getItemsImg(item.sk);
-            item.imgs = imgs;
+            // var imgs = await this.#getItemsImg(item.sk);
+            // item.imgs = imgs;
+            var promise = new Promise(async (resolve, reject) => {
+                var imgs = await this.#getItemsImg(item.sk);
+                item.imgs = imgs;
+                resolve();
+            });
+            promises.push(promise);
         });
+        await Promise.all(promises);
         return items;
     }
 

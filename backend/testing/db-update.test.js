@@ -14,7 +14,11 @@ afterAll(async () => {
 
     const client = new AWS.DynamoDB.DocumentClient();
     // delete items
-    const sks = ["trojan4@usc.edu-1", "trojan5@usc.edu-1"];
+    const sks = [
+        "trojan4@usc.edu-1",
+        "trojan5@usc.edu-1",
+        "hangtngu@usc.edu-1689720019537",
+    ];
     const deleteRequests = sks.map((skValue) => ({
         DeleteRequest: {
             Key: {

@@ -15,7 +15,7 @@ import {
 
 import { APIBuy, APIGetItems, APISell, APIUpdateItem } from "../constants/api";
 
-export const buyAction = (userEmail, itemId) => (dispatch) => {
+export const buyAction = (userEmail, itemId) => async (dispatch) => {
     dispatch({ type: BUY });
     APIBuy(userEmail, itemId)
         .then(() => {
@@ -26,7 +26,7 @@ export const buyAction = (userEmail, itemId) => (dispatch) => {
         });
 };
 
-export const sellAction = (item) => (dispatch) => {
+export const sellAction = (item) => async (dispatch) => {
     dispatch({ type: SELL });
     APISell(item)
         .then(() => {
@@ -39,7 +39,7 @@ export const sellAction = (item) => (dispatch) => {
 
 export const getItemsAction =
     (text = "") =>
-    (dispatch) => {
+    async (dispatch) => {
         dispatch({ type: GET_ITEMS });
         // get all items if text is empty
         APIGetItems(text)

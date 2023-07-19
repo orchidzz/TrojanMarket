@@ -18,7 +18,7 @@ class Server {
 
     middlewares() {
         this.app.use(cors()); // Enable CORS
-        this.app.use(express.json());
+        this.app.use(express.json({ limit: "50mb" }));
         // const serviceAccount = require("./../trojanmarket-firebase.json");
         admin.initializeApp({
             credential: admin.credential.cert({

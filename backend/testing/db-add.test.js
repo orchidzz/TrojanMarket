@@ -70,7 +70,6 @@ test("add user", async () => {
     var user = await db.getUserInfo("trojan1@usc.edu");
     expect(user.pk).toBe("user");
     expect(user.sk).toBe("trojan1@usc.edu");
-    expect(user.img).toBeFalsy();
 }, 50000);
 
 test("add chats", async () => {

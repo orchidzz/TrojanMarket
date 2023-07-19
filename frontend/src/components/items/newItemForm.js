@@ -56,24 +56,44 @@ function NewItemForm({ userEmail }) {
     const [description, setDescription] = useState("");
     const [slideIdx, setSlideIdx] = useState(0);
     const dispatch = useDispatch();
-    function handleSubmit() {
-        var base64Imgs = [];
-        imgs.forEach((img) => {
-            var reader = new FileReader();
-            reader.readAsDataURL(img);
-            reader.onloadend = () => {
-                base64Imgs.push(reader.result);
+    async function handleSubmit() {
+        function getBase64(imgs) {
+            return new Promise((resolve, reject) => {
+                var base64Imgs = [];
+                var promises = [];
+                for (let img of imgs) {
+                    var promise = new Promise((resolve, reject) => {
+                        var reader = new FileReader();
+                        reader.readAsDataURL(img);
+                        reader.onloadend = () => {
+                            base64Imgs.push(reader.result);
+                            resolve();
+                        };
+                        reader.onerror = function (error) {
+                            reject(error);
+                        };
+                    });
+                    promises.push(promise);
+                }
+                Promise.all(promises).then(() => {
+                    resolve(base64Imgs);
+                });
+            });
+        }
+
+        getBase64(imgs).then((resolvedImgs) => {
+            var item = {
+                itemTitle: title,
+                itemPrice: price,
+                itemDescription: description,
+                itemImgs: resolvedImgs,
+                itemListedTime: Date.now(), // get current time in ms
+                userEmail: userEmail,
             };
+
+            console.log(item);
+            dispatch(sellAction(item));
         });
-        var item = {
-            itemTitle: title,
-            itemPrice: price,
-            itemDescription: description,
-            itemImgs: base64Imgs,
-            itemListedTime: Date.now(), // get current time in ms
-            userEmail: userEmail,
-        };
-        dispatch(sellAction(item));
     }
     return (
         <ThemeProvider theme={customTheme}>
@@ -147,7 +167,7 @@ function NewItemForm({ userEmail }) {
                                         onChange={(event) =>
                                             setImgs([
                                                 ...imgs,
-                                                event.target.files,
+                                                event.target.files[0],
                                             ])
                                         }
                                     />
@@ -183,9 +203,7 @@ function NewItemForm({ userEmail }) {
                             <>
                                 <img
                                     key={slideIdx}
-                                    src={URL.createObjectURL(
-                                        new Blob(imgs[slideIdx])
-                                    )}
+                                    src={URL.createObjectURL(imgs[slideIdx])}
                                     alt={slideIdx}
                                     style={{
                                         width: "auto",
@@ -229,7 +247,7 @@ function NewItemForm({ userEmail }) {
     );
 }
 const mapStateToProps = (state) => {
-    return { userEmail: state.userEmail };
+    return { userEmail: state.userReducer.userEmail };
 };
 
 export default connect(mapStateToProps)(NewItemForm);
