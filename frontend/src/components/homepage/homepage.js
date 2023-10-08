@@ -15,7 +15,10 @@ function Homepage() {
     useEffect(() => {
         auth.onAuthStateChanged(async (user) => {
             if (user) {
-                if (user.email.includes("@usc.edu")) {
+                if (
+                    user.email.includes("@usc.edu") ||
+                    user.email.includes(".edu") // for viewing purposes
+                ) {
                     dispatch(
                         loginAction(
                             await auth.currentUser.getIdToken(),
