@@ -20,12 +20,23 @@ class Server {
         this.app.use(cors()); // Enable CORS
         this.app.use(express.json({ limit: "50mb" }));
         // const serviceAccount = require("./../trojanmarket-firebase.json");
+        // use this concatenation for cyclic deployment --> env var max char = 255
+        const FIREBASE_PRIVATE_KEY =
+            process.env.FIREBASE_PRIVATE_KEY1 +
+            process.env.FIREBASE_PRIVATE_KEY2 +
+            process.env.FIREBASE_PRIVATE_KEY3 +
+            process.env.FIREBASE_PRIVATE_KEY4 +
+            process.env.FIREBASE_PRIVATE_KEY5 +
+            process.env.FIREBASE_PRIVATE_KEY6 +
+            process.env.FIREBASE_PRIVATE_KEY7;
+        // const FIREBASE_PRIVATE_KEY = process.env.FIREBASE_PRIVATE_KEY;
+        console.log(FIREBASE_PRIVATE_KEY);
         admin.initializeApp({
             credential: admin.credential.cert({
                 type: "service_account",
                 project_id: process.env.FIREBASE_PROJECT_ID,
                 private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-                private_key: process.env.FIREBASE_PRIVATE_KEY,
+                private_key: FIREBASE_PRIVATE_KEY,
                 client_email: process.env.FIREBASE_CLIENT_EMAIL,
                 client_id: process.env.FIREBASE_CLIENT_ID,
                 auth_uri: "https://accounts.google.com/o/oauth2/auth",

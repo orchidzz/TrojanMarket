@@ -24,6 +24,7 @@ const mapStateToProps = (state) => {
                     imgs={item.imgs}
                     description={item.description}
                     active={item.active}
+                    buyers={item.buyers}
                 />
             );
         }),
